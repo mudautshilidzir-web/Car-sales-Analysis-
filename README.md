@@ -6,7 +6,7 @@ the dealership network, improve sales performance, and optimize inventory. Your 
 a Junior Data Analyst, is to extract actionable insights from the historical car sales data
 and prepare a presentation that will help guide future sales and marketing strategies
 
-##Project Overview
+## Project Overview
 
 This project analyzes Bright Motors’ historical car sales data to identify top-performing car models, 
 regional sales trends, and customer purchasing patterns. Key metrics like total revenue and profit margins will be calculated, 
@@ -27,7 +27,15 @@ is to understand:
 
 • Recommendations to increase dealership profitability and efficiency
 
+## Tools Used
 
+SQL — for data extraction, classification, and aggregation.
+
+-Snowflake-for data storage, querying, and analytics.
+
+-Excel -Data visualization, charts, and pivot analysis.
+
+-Canva -Report design, infographics, and presentation slides.
 
 
 
