@@ -94,9 +94,7 @@ create table CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE  AS
 SELECT *
 FROM CAR_SALES.ANALYSIS.CAR_SALES;
 
-
-
--------
+-----------------------------------------------------------
 select *
 from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE;
 -------------------------------------------------------
