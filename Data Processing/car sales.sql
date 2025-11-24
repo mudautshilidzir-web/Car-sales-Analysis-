@@ -23,7 +23,11 @@ from CAR_SALES.ANALYSIS.CAR_SALES
 group by vin 
 having count(*) > 1;
 
-----------------------------------------
+--deleting nulls where vins is null
+delete from CAR_SALES.ANALYSIS.CAR_SALES
+where vin IS NULL;
+
+
 -- removing vin's duplicates 
 delete from CAR_SALES.ANALYSIS.CAR_SALES
 where vin in(select vin from(select vin, row_number () over (partition by vin order by vin) as rn
@@ -50,51 +54,79 @@ update CAR_SALES.ANALYSIS.CAR_SALES
 set STATE= upper(STATE);
 
 ---Checking invalid states
+
 select distinct state
 from CAR_SALES.ANALYSIS.CAR_SALES
 where length(state) <>2;
-----------------------------------
--- Replace missing selling price with 0
 
-UPDATE CAR_SALES.ANALYSIS.CAR_SALES
-SET sellingprice = 0
-WHERE sellingprice IS NULL;
+----deleting where length of state is <> 2
+
+delete from CAR_SALES.ANALYSIS.CAR_SALES
+where length(state) <> 2;
+
+----------------------------------
+-- deleting nulls selling price with 
+
+delete from CAR_SALES.ANALYSIS.CAR_SALES
+where sellingprice IS NULL OR sellingprice <= 0;
+
+---------------------------------------
+--removing nulls
+DELETE FROM CAR_SALES.ANALYSIS.CAR_SALES
+WHERE odometer IS NULL OR odometer <= 0;
+------------------------------------------------
+--checking nulls
+
+select *
+from  CAR_SALES.ANALYSIS.CAR_SALES
+where condition is null;
+
+--removing nulls
+delete from  CAR_SALES.ANALYSIS.CAR_SALES
+where condition IS NULL OR condition < 1 OR condition > 49;
+
+----------------------------------------
+
+
 -------------------------------------------------------
 --creating a new table
-create table CAR_SALES.ANALYSIS.CAR_SALES_cleaned__table as 
-select * 
-from CAR_SALES.ANALYSIS.CAR_SALES;
+create table CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE  AS
+SELECT *
+FROM CAR_SALES.ANALYSIS.CAR_SALES;
+
+
+
 -------
 select *
-from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE;
+from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE;
 -------------------------------------------------------
 --checking the manufucturing year of each car and vehicle age
 
 SELECT year, YEAR(CURRENT_DATE) - year AS vehicle_age
-FROM CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE;
+FROM CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE;
 -----------------------------------------
 
 select max(sellingprice) as  max_selling_price
-from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE;
+from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE;
 
 select min(sellingprice) as  min_selling_price
-from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE;
+from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE;
 -----------------------------------------
-select * from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE;
+select * from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE;
 --------------------------------------------------------
 --Average Selling Price by Vehicle Body Type
 SELECT 
     BODY,
     COUNT(*) AS units_sold,
     AVG(sellingprice) AS avg_selling_price
-FROM CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE
+FROM CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE
 GROUP BY BODY
 ORDER BY avg_selling_price DESC;
 --------------------------------------------
 --calculating the total car as total_unit_sold
 select 
 count(*) as  total_units_sold,
-from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE;
+from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE;
 -------------------------------------------------
 -- Sales trend by car year
 
@@ -102,7 +134,7 @@ select
 make,
 count(*) AS total_cars_sold
         
-from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE
+from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE
 group by make
 order by total_cars_sold desc;
 ----------------------------------------------------------------------------
@@ -111,7 +143,7 @@ select *,
 count(*) AS units_sold,        
 sum(sellingprice) as total_revenue,
 avg(sellingprice) as avg_price
-from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE
+from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE
 group by  all
 order by total_revenue desc;
 ----------------------------------------
@@ -125,17 +157,17 @@ count(*) AS total_units_sold,
 sum(sellingprice) AS total_revenue,
 round(avg(sellingprice), 2) AS avg_selling_price,
     
-from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE
+from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE
 group By make
 order by total_revenue desc;
 -----------------------------------------
 --displaying the max and min condition of the car
 
 select max(condition) as max_condition 
-from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE;
+from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE;
 
 select min(condition) as min_condition 
-from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE;
+from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE;
 
 
 -------------------------------------------------------------
@@ -166,16 +198,17 @@ when sellingprice between 210000 and 250000 then 'Premium'
 else 'Luxury' 
 end as price_category,
 case 
-when condition between 31 and  45 then 'Excellent'
+when condition between 31 and  49 then 'Excellent'
 when condition between 6 and  30 then 'Good'
 when condition between 1 and 5 then 'bad'
 else 'Poor'
 end as condition_cateory
 
-from CAR_SALES.ANALYSIS.CAR_SALES_CLEANED__TABLE
+from CAR_SALES.ANALYSIS.CAR_SALES_CLEAN__TABLE
 group by  all
 order by  total_revenue desc;
 ----------------------------------------------------------------
+
 
 
 
